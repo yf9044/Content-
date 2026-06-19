@@ -7,7 +7,7 @@ Token-cost rules honoured here:
   * Only the hook text (first sentence / 125 chars) is ever sent to the AI,
     never the full caption.
   * Posts already analysed (tracked in ``seen_ids.json``) are skipped.
-  * All *new* hooks are batched into ONE OpenAI call (keeping the run within
+  * All *new* hooks are batched into ONE AI call (keeping the run within
     the 3-calls-per-day budget) rather than one call per hook.
   * Analyses are cached on disk so they are never recomputed.
 """

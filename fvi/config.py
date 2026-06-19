@@ -33,7 +33,7 @@ for _directory in (DATA_DIR, CACHE_DIR, REPORTS_DIR):
 load_dotenv(BASE_DIR / ".env")
 
 APIFY_API_KEY: str = os.getenv("APIFY_API_KEY", "").strip()
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "").strip()
+OLLAMA_API_KEY: str = os.getenv("OLLAMA_API_KEY", "").strip()
 
 # ---------------------------------------------------------------------------
 # Tunable behaviour
@@ -43,8 +43,12 @@ MAX_COMPETITORS: int = 10
 POSTS_PER_ACCOUNT: int = 20  # Fetch last 20 posts per account
 CACHE_DAYS: int = 7  # Keep cache for 7 days
 TOP_POSTS_FOR_AI: int = 5  # Only send top 5 posts per account to AI
-AI_MODEL: str = "gpt-4o-mini"  # Cheap and fast
-MAX_TOKENS: int = 1500
+
+# ---------------------------------------------------------------------------
+# AI (Ollama Cloud, via OpenAI-compatible client)
+# ---------------------------------------------------------------------------
+AI_MODEL: str = "llama3.2"
+OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "https://api.ollama.com/v1").strip()
 
 # ---------------------------------------------------------------------------
 # Apify actors
@@ -56,7 +60,7 @@ TIKTOK_ACTOR: str = "clockworks/tiktok-scraper"
 SCRAPE_RETRIES: int = 3
 SCRAPE_RETRY_DELAY_SECONDS: int = 5
 
-# Hard cap on the number of OpenAI calls per run (token-cost guard rail).
+# Hard cap on the number of AI calls per run (cost/perf guard rail).
 MAX_AI_CALLS_PER_DAY: int = 3
 
 # ---------------------------------------------------------------------------

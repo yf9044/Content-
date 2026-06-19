@@ -1,10 +1,10 @@
-"""Shared OpenAI helper.
+"""Shared AI helper (Ollama Cloud via the OpenAI-compatible client).
 
-Centralises every OpenAI interaction so we can:
+Centralises every AI interaction so we can:
   * enforce the hard daily call budget (``MAX_AI_CALLS_PER_DAY``),
-  * always use the cheap ``gpt-4o-mini`` model,
-  * log token usage after every call,
-  * degrade gracefully (return ``None``) when no key is configured.
+  * always use the configured ``llama3.2`` model on Ollama Cloud,
+  * log usage after every call,
+  * degrade gracefully (return ``None``) when the API is unavailable.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ _call_count: int = 0
 
 
 def calls_made() -> int:
-    """Return the number of OpenAI calls made so far this run."""
+    """Return the number of AI calls made so far this run."""
     return _call_count
 
 
@@ -38,24 +38,23 @@ def reset_calls() -> None:
 
 
 def is_available() -> bool:
-    """Whether real OpenAI calls can be made."""
-    return OpenAI is not None and bool(config.OPENAI_API_KEY)
+    """Whether real Ollama Cloud calls can be made."""
+    return OpenAI is not None and bool(config.OLLAMA_API_KEY)
 
 
 def chat_json(
     system_prompt: str,
     user_content: str,
-    max_tokens: int = config.MAX_TOKENS,
 ) -> dict[str, Any] | list[Any] | None:
     """Send a single chat completion expecting a JSON response.
 
     Returns the parsed JSON object/array, or ``None`` if the call could not be
-    made (missing key/SDK, budget exceeded, or any runtime error).
+    made (missing SDK/key, budget exceeded, or any runtime error).
     """
     global _call_count
 
     if not is_available():
-        logger.warning("OpenAI unavailable (missing SDK or OPENAI_API_KEY); skipping call")
+        logger.warning("Ollama Cloud unavailable (missing SDK or OLLAMA_API_KEY); skipping call")
         return None
 
     if _call_count >= config.MAX_AI_CALLS_PER_DAY:
@@ -65,22 +64,22 @@ def chat_json(
         )
         return None
 
+    prompt = f"{system_prompt}\n\n{user_content}"
+
     try:
-        client = OpenAI(api_key=config.OPENAI_API_KEY)
+        client = OpenAI(
+            base_url=config.OLLAMA_BASE_URL,
+            api_key=config.OLLAMA_API_KEY,
+        )
         _call_count += 1
         logger.info(
-            "OpenAI call %d/%d using model %s",
+            "Ollama Cloud call %d/%d using model %s",
             _call_count, config.MAX_AI_CALLS_PER_DAY, config.AI_MODEL,
         )
         response = client.chat.completions.create(
             model=config.AI_MODEL,
-            max_tokens=max_tokens,
-            temperature=0.7,
+            messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content},
-            ],
         )
 
         usage = getattr(response, "usage", None)
@@ -92,11 +91,11 @@ def chat_json(
                 getattr(usage, "total_tokens", "?"),
             )
 
-        content = response.choices[0].message.content or ""
-        return json.loads(content)
+        result = response.choices[0].message.content or ""
+        return json.loads(result)
     except json.JSONDecodeError as exc:
-        logger.error("OpenAI returned non-JSON content: %s", exc)
+        logger.error("Ollama Cloud returned non-JSON content: %s", exc)
         return None
     except Exception as exc:  # noqa: BLE001
-        logger.error("OpenAI call failed: %s", exc)
+        logger.error("Ollama Cloud call failed: %s", exc)
         return None

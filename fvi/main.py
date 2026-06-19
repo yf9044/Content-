@@ -81,7 +81,7 @@ def run(dry_run: bool = False, open_browser: bool = True) -> None:
         open_browser=open_browser,
     )
 
-    logger.info("Total OpenAI calls this run: %d", ai.calls_made())
+    logger.info("Total AI calls this run: %d", ai.calls_made())
     logger.info("=== Run complete. Report: %s ===", report_path)
 
 

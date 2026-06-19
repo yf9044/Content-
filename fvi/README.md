@@ -36,11 +36,15 @@ cp .env.example .env
 
 ```dotenv
 APIFY_API_KEY=your_apify_token
-OPENAI_API_KEY=your_openai_key
+OLLAMA_API_KEY=your_key_here
 ```
 
 - **Apify token:** https://console.apify.com/account/integrations
-- **OpenAI key:** https://platform.openai.com/api-keys
+- **Ollama Cloud key:** https://ollama.com/settings/keys
+
+The model `llama3.2` runs on Ollama Cloud via the OpenAI-compatible endpoint at
+`https://api.ollama.com/v1` (override with the `OLLAMA_BASE_URL` env var if
+needed).
 
 ### 3. Edit the competitors you track
 
@@ -80,17 +84,18 @@ All tunables live in `config.py`:
 | `POSTS_PER_ACCOUNT` | `20` | Posts fetched per account |
 | `CACHE_DAYS` | `7` | How long raw scrape cache is kept |
 | `TOP_POSTS_FOR_AI` | `5` | Top posts/hooks summarized for the AI |
-| `AI_MODEL` | `gpt-4o-mini` | Cheap, fast model used for every call |
-| `MAX_TOKENS` | `1500` | Max tokens per AI response |
+| `AI_MODEL` | `llama3.2` | Ollama Cloud model used for every call |
+| `OLLAMA_BASE_URL` | `https://api.ollama.com/v1` | Ollama Cloud API endpoint |
 
 ## Token / cost optimization
 
 - Raw post data is **never** sent to the AI — only summarized context.
 - Only hooks (first 125 chars), not full captions, reach the model.
 - `data/seen_ids.json` prevents re-analyzing the same post twice.
-- The whole run is capped at **3 OpenAI calls/day** (hooks are batched into one
+- The whole run is capped at **3 AI calls/day** (hooks are batched into one
   call; idea generation is a single call).
-- Every run uses `gpt-4o-mini` and logs token usage after each call.
+- Every run uses the `llama3.2` model via Ollama Cloud and logs token usage
+  after each call.
 
 ## Project structure
 
@@ -118,7 +123,7 @@ fvi/
 
 ## Notes
 
-- The tool degrades gracefully: if OpenAI is unavailable (missing key or budget
+- The tool degrades gracefully: if Ollama Cloud is unavailable (missing key or budget
   reached) it falls back to deterministic heuristics so a report is always
   produced.
 - Scraping retries 3 times with a 5s delay before giving up on an account.

@@ -1,7 +1,7 @@
 """Module 6 — Content generator.
 
 Builds a single *summarised* context string (never raw posts) from the top
-hooks, trends, and carousel structures, then makes ONE OpenAI call to produce
+hooks, trends, and carousel structures, then makes ONE AI call to produce
 30 ready-to-use content ideas (10 reels, 10 TikToks, 10 carousels).
 """
 
