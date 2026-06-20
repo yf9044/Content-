@@ -1,4 +1,4 @@
-apify-client>=1.7.0
+apify-client>=3.0.0
 openai>=1.30.0
 python-dotenv>=1.0.0
 markdown>=3.6

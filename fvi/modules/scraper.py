@@ -86,11 +86,17 @@ def _normalize_tiktok(item: dict[str, Any]) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Apify actor invocation with retry logic.
 # ---------------------------------------------------------------------------
+def _instagram_profile_url(username: str) -> str:
+    """Build a full Instagram profile URL from a username/handle."""
+    handle = username.strip().lstrip("@").strip("/")
+    return f"https://www.instagram.com/{handle}/"
+
+
 def _build_actor_input(platform: str, username: str) -> tuple[str, dict[str, Any]]:
     """Return the (actor_id, run_input) pair for a platform/username."""
     if platform == "instagram":
         return config.INSTAGRAM_ACTOR, {
-            "username": [username.lstrip("@")],
+            "directUrls": [_instagram_profile_url(username)],
             "resultsType": "posts",
             "resultsLimit": config.POSTS_PER_ACCOUNT,
             "addParentData": False,
@@ -122,11 +128,28 @@ def _run_actor(platform: str, username: str) -> list[dict[str, Any]]:
                 "Calling Apify actor %s for %s/%s (attempt %d/%d)",
                 actor_id, platform, username, attempt, config.SCRAPE_RETRIES,
             )
-            run = client.actor(actor_id).call(run_input=run_input)
-            dataset_id = (run or {}).get("defaultDatasetId")
+
+            # Start the run, then explicitly wait for it to finish using the
+            # run client. The apify-client SDK returns a typed ``Run`` model
+            # (pydantic), so its fields are accessed as attributes — NOT via
+            # ``.get()`` (the source of the "Run object has no attribute 'get'"
+            # error).
+            started = client.actor(actor_id).start(run_input=run_input)
+            run_client = client.run(started.id)
+            run = run_client.wait_for_finish()
+            if run is None:
+                raise RuntimeError("Apify run could not be retrieved after finishing")
+
+            if run.status != "SUCCEEDED":
+                raise RuntimeError(f"Apify run finished with status {run.status!r}")
+
+            dataset_id = run.default_dataset_id
             if not dataset_id:
                 raise RuntimeError("Apify run returned no dataset id")
-            items = list(client.dataset(dataset_id).iterate_items())
+
+            # ``list_items()`` returns a ``DatasetItemsPage`` whose ``.items``
+            # is a plain ``list[dict]`` of the scraped records.
+            items = client.dataset(dataset_id).list_items().items
             logger.info("Apify returned %d items for %s/%s", len(items), platform, username)
             return items
         except Exception as exc:  # noqa: BLE001 - retry on any failure
