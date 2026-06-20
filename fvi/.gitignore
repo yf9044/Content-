@@ -1,0 +1,18 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local runtime data (cache + generated reports)
+data/cache/*
+data/reports/*
+data/seen_ids.json
+
+# Keep the directories themselves under version control.
+!data/cache/.gitkeep
+!data/reports/.gitkeep
