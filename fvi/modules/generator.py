@@ -19,12 +19,23 @@ NICHE = "fitness"
 
 SYSTEM_PROMPT = (
     "You are an elite short-form fitness content strategist. Using the provided "
-    "intelligence summary, produce fresh content ideas for the user's fitness "
-    "niche. Respond with JSON only in this exact shape: "
+    "intelligence summary, produce fresh, ready-to-film content ideas for the "
+    "user's fitness niche. Respond with JSON only in this exact shape: "
     '{"reels": [...], "tiktoks": [...], "carousels": [...]}. '
-    "Each list must contain exactly 10 idea objects, and each idea object must "
-    "have the keys: title, hook, format, why_it_will_work. Do not include any "
-    "other keys or commentary."
+    "Each list must contain exactly 10 idea objects. Each idea object MUST have "
+    "these exact keys:\n"
+    '  "title": short idea title,\n'
+    '  "format": one of [Talking Head, Carousel, Listicle, Transformation, '
+    "Tutorial, Reaction],\n"
+    '  "hook": the exact opening line to say or show (punchy, scroll-stopping),\n'
+    '  "breakdown": 2-3 sentences on why this concept will work,\n'
+    '  "script": an object with keys '
+    '"hook_seconds" (0-3sec: exact words), '
+    '"build_seconds" (3-20sec: what to do/show), '
+    '"payoff_seconds" (20-35sec: the value/reveal), '
+    '"cta_seconds" (last 3sec: exact call to action),\n'
+    '  "filming_tips": an array of exactly 3 short, practical filming tips.\n'
+    "Do not include any other keys or commentary."
 )
 
 
@@ -74,27 +85,84 @@ def _fallback_ideas(context_hooks: list[str]) -> dict[str, list[dict[str, Any]]]
         "The truth about fat loss",
     ]
 
-    def make(kind: str, fmt: str) -> list[dict[str, Any]]:
+    def make(kind: str, fmt: str, tips: list[str]) -> list[dict[str, Any]]:
         ideas = []
         for i in range(10):
             seed = base[i % len(base)]
             ideas.append(
                 {
                     "title": f"{kind} idea #{i + 1}: {seed[:40]}",
-                    "hook": seed,
                     "format": fmt,
-                    "why_it_will_work": (
+                    "hook": seed,
+                    "breakdown": (
                         "Mirrors a proven viral hook pattern and targets a common "
-                        "fitness pain point with high emotional resonance."
+                        "fitness pain point with high emotional resonance, which "
+                        "drives strong watch-through and saves."
                     ),
+                    "script": {
+                        "hook_seconds": f"0-3sec: \"{seed}\"",
+                        "build_seconds": (
+                            "3-20sec: Explain the problem and walk through the key "
+                            "points with clear on-screen text and demos."
+                        ),
+                        "payoff_seconds": (
+                            "20-35sec: Reveal the fix/insight and show the result "
+                            "your audience actually wants."
+                        ),
+                        "cta_seconds": (
+                            "last 3sec: \"Save this and follow for more.\""
+                        ),
+                    },
+                    "filming_tips": tips,
                 }
             )
         return ideas
 
     return {
-        "reels": make("Reel", "15-30s talking-head with on-screen text"),
-        "tiktoks": make("TikTok", "Fast-cut demo with trending audio"),
-        "carousels": make("Carousel", "7-slide swipe with bold title + CTA"),
+        "reels": make(
+            "Reel", "Talking Head",
+            ["Film in the gym", "Use bold text overlay", "No music needed"],
+        ),
+        "tiktoks": make(
+            "TikTok", "Tutorial",
+            ["Use a trending sound", "Fast cuts every 2s", "Hook in frame 1"],
+        ),
+        "carousels": make(
+            "Carousel", "Carousel",
+            ["7 slides max", "One idea per slide", "Strong CTA on last slide"],
+        ),
+    }
+
+
+def _normalize_idea(idea: dict[str, Any], default_format: str) -> dict[str, Any]:
+    """Ensure an idea object has every key the report expects."""
+    raw_script = idea.get("script")
+    script = raw_script if isinstance(raw_script, dict) else {}
+    raw_tips = idea.get("filming_tips")
+    if isinstance(raw_tips, list):
+        tips = [str(t) for t in raw_tips if str(t).strip()]
+    elif raw_tips:
+        tips = [str(raw_tips)]
+    else:
+        tips = []
+    hook = str(idea.get("hook", "")).strip()
+    return {
+        "title": str(idea.get("title", "Untitled idea")).strip() or "Untitled idea",
+        "format": str(idea.get("format") or default_format).strip(),
+        "hook": hook,
+        # Accept the legacy "why_it_will_work" key as a breakdown source.
+        "breakdown": str(
+            idea.get("breakdown") or idea.get("why_it_will_work") or ""
+        ).strip(),
+        "script": {
+            "hook_seconds": str(
+                script.get("hook_seconds") or (f'0-3sec: "{hook}"' if hook else "")
+            ),
+            "build_seconds": str(script.get("build_seconds", "")),
+            "payoff_seconds": str(script.get("payoff_seconds", "")),
+            "cta_seconds": str(script.get("cta_seconds", "")),
+        },
+        "filming_tips": tips,
     }
 
 
@@ -102,12 +170,15 @@ def _coerce_ideas(payload: Any) -> dict[str, list[dict[str, Any]]] | None:
     """Validate/normalise the AI payload into the expected idea structure."""
     if not isinstance(payload, dict):
         return None
+    defaults = {"reels": "Talking Head", "tiktoks": "Tutorial", "carousels": "Carousel"}
     result: dict[str, list[dict[str, Any]]] = {}
-    for key in ("reels", "tiktoks", "carousels"):
+    for key, default_format in defaults.items():
         items = payload.get(key)
         if not isinstance(items, list):
             return None
-        result[key] = [i for i in items if isinstance(i, dict)]
+        result[key] = [
+            _normalize_idea(i, default_format) for i in items if isinstance(i, dict)
+        ]
     return result
 
 

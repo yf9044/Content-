@@ -2,8 +2,8 @@
 
 A local Python CLI that, every day, scrapes 10 fitness competitor accounts on
 **Instagram** and **TikTok**, detects viral/outlier posts, extracts hooks and
-trends, and generates a daily markdown report packed with ready-to-use content
-ideas.
+trends, and generates a premium daily **HTML dashboard** packed with
+ready-to-use content briefs.
 
 ## What it does
 
@@ -12,11 +12,13 @@ Load competitors → Scrape (cached) → Detect outliers → Extract hooks (AI)
 → Detect trends → Analyze carousels → Generate ideas (AI) → Build & open report
 ```
 
-The report (`data/reports/YYYY-MM-DD_report.md`) includes top winning posts,
-hooks and reusable templates, emerging trends, a competitor leaderboard, the
-best carousel structures, and 30 fresh content ideas (10 reels / 10 TikToks /
-10 carousels) plus a single recommended post for the day. It is rendered to
-HTML and auto-opened in your browser.
+The report (`data/reports/YYYY-MM-DD_report.html`) is a dark-theme content
+intelligence dashboard with a summary bar (posts scraped, outliers, trending
+topics), ranked viral-post cards (stats, hook, "why it worked", format badge,
+view link), 30 ready-to-film content briefs (10 reels / 10 TikToks / 10
+carousels — each with a hook, breakdown, expandable full script, and filming
+tips), trending-topic badges, a competitor leaderboard, and a highlighted
+"recommended post for today". It is auto-opened in your browser.
 
 ## Setup
 
@@ -110,7 +112,7 @@ fvi/
 ├── data/
 │   ├── competitors.json
 │   ├── cache/         # Raw scraped posts per account per day
-│   └── reports/       # Daily markdown reports + ideas JSON
+│   └── reports/       # Daily HTML dashboards + ideas JSON
 └── modules/
     ├── scraper.py     # Apify scraping logic
     ├── outlier.py     # Engagement scoring
@@ -118,7 +120,7 @@ fvi/
     ├── trends.py      # Trend detection
     ├── carousel.py    # Carousel analysis
     ├── generator.py   # Content idea generation (AI)
-    └── reporter.py    # Markdown report builder
+    └── reporter.py    # Premium HTML dashboard builder
 ```
 
 ## Notes

@@ -25,11 +25,24 @@ logger = logging.getLogger(__name__)
 
 HOOK_MAX_CHARS = 125
 
+FORMAT_TYPES = (
+    "Talking Head",
+    "Carousel",
+    "Listicle",
+    "Transformation",
+    "Tutorial",
+    "Reaction",
+)
+
 SYSTEM_PROMPT = (
     "You are a viral content analyst. You will be given a numbered list of "
     "fitness hooks. For EACH hook return one JSON object with these exact "
     "keys: hook_text, hook_category, emotional_trigger, curiosity_trigger, "
-    "reusable_template. Respond with JSON only in the form "
+    "reusable_template, why_it_worked, format_type. "
+    "'why_it_worked' must be a 2-3 sentence explanation of why a post with this "
+    "hook likely went viral. 'format_type' must be exactly one of: "
+    "Talking Head, Carousel, Listicle, Transformation, Tutorial, Reaction. "
+    "Respond with JSON only in the form "
     '{"results": [ {..}, {..} ]} where the results array preserves the input '
     "order and length."
 )
@@ -58,15 +71,33 @@ def _heuristic_analysis(hook_text: str) -> dict[str, Any]:
     if any(w in lowered for w in ("stop", "mistake", "wrong", "never", "avoid")):
         category = "warning"
         emotional = "fear of failure"
-    elif any(w in lowered for w in ("how", "why", "secret", "truth")):
+        format_type = "Talking Head"
+    elif any(w in lowered for w in ("how", "step", "do this", "tutorial")):
         category = "educational"
         emotional = "curiosity"
+        format_type = "Tutorial"
+    elif any(w in lowered for w in ("why", "secret", "truth", "nobody")):
+        category = "educational"
+        emotional = "curiosity"
+        format_type = "Talking Head"
+    elif any(c.isdigit() for c in hook_text) and any(
+        w in lowered for w in ("tips", "ways", "things", "reasons", "moves", "foods")
+    ):
+        category = "listicle"
+        emotional = "value"
+        format_type = "Listicle"
+    elif any(w in lowered for w in ("before", "after", "transformation", "days", "weeks")):
+        category = "transformation"
+        emotional = "aspiration"
+        format_type = "Transformation"
     elif any(w in lowered for w in ("i ", "my ", "me ")):
         category = "personal story"
         emotional = "relatability"
+        format_type = "Talking Head"
     else:
         category = "tip"
         emotional = "aspiration"
+        format_type = "Talking Head"
     return {
         "hook_text": hook_text,
         "hook_category": category,
@@ -75,6 +106,13 @@ def _heuristic_analysis(hook_text: str) -> dict[str, Any]:
         "reusable_template": re.sub(
             r"\d+", "[N]", hook_text[:HOOK_MAX_CHARS]
         ) or "[Hook template]",
+        "why_it_worked": (
+            "The hook opens a curiosity gap and speaks to a common fitness pain "
+            "point, so viewers stop scrolling to find the answer. Its "
+            f"{emotional} angle drives saves and shares, which the algorithm "
+            "rewards with wider reach."
+        ),
+        "format_type": format_type,
     }
 
 
