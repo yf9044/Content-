@@ -10,7 +10,10 @@ import { formatDistance, formatEta, formatUsd } from '@/lib/format';
 export function StoreCard({ store }: { store: Store }) {
   return (
     <Link href={{ pathname: '/store/[id]', params: { id: store.id } }} asChild>
-      <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={store.name}
+        style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}>
         <View className="flex-row gap-4 rounded-3xl border border-stone bg-surface p-4">
           <View>
             <FoodTile emoji={store.emoji} accent={store.accent} size={84} radius={20} />

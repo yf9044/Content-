@@ -2,6 +2,9 @@
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
+  // The app is light-only for now; `class` also stops react-native-css-interop
+  // from throwing when Expo forces the colour scheme on web.
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {

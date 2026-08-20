@@ -20,7 +20,7 @@ export function BrandMark({ size = 44, showWordmark = true, onDark = false }: Br
             Yallatlob
           </Text>
           <Text className={`text-[11px] ${onDark ? 'text-paper/70' : 'text-muted'}`}>
-            يلا تلب · delivered in Lebanon
+            Delivered across Lebanon
           </Text>
         </View>
       ) : null}

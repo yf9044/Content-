@@ -70,6 +70,7 @@ export default function HomeScreen() {
         <Pressable
           className="mx-4 mt-4"
           accessibilityRole="search"
+          accessibilityLabel="Search stores and dishes"
           onPress={() => router.push('/search')}
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
           <View className="h-12 flex-row items-center gap-2 rounded-2xl border border-stone bg-surface px-4">
@@ -89,6 +90,7 @@ export default function HomeScreen() {
               <Pressable
                 key={category.id}
                 accessibilityRole="button"
+                accessibilityLabel={category.label}
                 accessibilityState={{ selected: active }}
                 onPress={() => setActiveCategory(active ? null : category.id)}
                 style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
@@ -148,7 +150,7 @@ export default function HomeScreen() {
 
         <SectionHeader
           title={activeCategory ? categories.find((c) => c.id === activeCategory)!.label : 'All stores'}
-          subtitle={`${visibleStores.length} open near you`}
+          subtitle={`${visibleStores.filter((store) => !store.closed).length} open near you`}
         />
         <View className="gap-3 px-4">
           {visibleStores.map((store) => (

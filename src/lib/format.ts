@@ -13,6 +13,14 @@ export function formatLbp(amountUsd: number): string {
   return `${lbp.toLocaleString('en-US')} LL`;
 }
 
+/** `+96170123456` -> `+961 70 123 456` */
+export function formatPhone(phone: string): string {
+  const national = phone.replace(/^\+961/, '');
+  if (national.length < 7) return phone;
+  const [, prefix, middle, last] = national.match(/^(\d{2})(\d{3})(\d+)$/) ?? [];
+  return prefix ? `+961 ${prefix} ${middle} ${last}` : phone;
+}
+
 export function formatDistance(km: number): string {
   return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 }

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BrandMark } from '@/components/brand-mark';
 import { Brand, MaxContentWidth } from '@/constants/theme';
-import { LBP_PER_USD } from '@/lib/format';
+import { formatPhone, LBP_PER_USD } from '@/lib/format';
 import { isSupabaseConfigured, useSession } from '@/lib/session';
 
 const ROWS: { icon: keyof typeof Ionicons.glyphMap; label: string; detail: string }[] = [
@@ -42,7 +42,9 @@ export default function AccountScreen() {
             <Text className="text-base font-bold text-ink">
               {isGuest ? 'Guest' : 'Yallatlob customer'}
             </Text>
-            <Text className="text-xs text-muted">{isGuest ? 'Not signed in' : phone}</Text>
+            <Text className="text-xs text-muted">
+              {isGuest ? 'Not signed in' : phone ? formatPhone(phone) : ''}
+            </Text>
           </View>
           <View className="rounded-full bg-saffron/20 px-3 py-1.5">
             <Text className="text-[11px] font-bold text-ember">Gold · 12 orders</Text>

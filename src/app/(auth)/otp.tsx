@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
 import { Brand, MaxContentWidth } from '@/constants/theme';
+import { formatPhone } from '@/lib/format';
 import { useSession } from '@/lib/session';
 
 const CODE_LENGTH = 6;
@@ -85,7 +86,8 @@ export default function OtpVerifyScreen() {
         <View className="mt-8 gap-2">
           <Text className="text-3xl font-extrabold text-ink">Verify your number</Text>
           <Text className="text-sm text-muted">
-            We sent a {CODE_LENGTH}-digit code to <Text className="font-bold text-ink">{phone}</Text>
+            We sent a {CODE_LENGTH}-digit code to{' '}
+            <Text className="font-bold text-ink">{formatPhone(phone)}</Text>
           </Text>
         </View>
 
