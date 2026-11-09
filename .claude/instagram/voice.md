@@ -15,39 +15,45 @@ the words out loud. A line you would never say is not a draft, it is a retake.
 ## Who I am
 
 - **Name:**
-- **Handle:**
-- **What I do, in one sentence:**
-- **Who I am talking to:** (be specific: "photographers charging under $2,000",
-  not "creatives")
-- **What I sell:**
+- **Handle:** @yehyalifts
+- **What I do, in one sentence:** I make fitness content: funny, relatable
+  gym stuff mixed with real fitness information.
+- **Who I am talking to:** uni students and people around my age (a bit
+  younger or older too) who are into fitness or getting into it.
+- **What I sell:** nothing yet. Plan: start online coaching once the account
+  hits 10k followers. Until then the goal is growth, not sales.
 
 ## What I sound like
 
-- **Three of my own reels or captions that sound most like me:** (paste them)
-- **On camera I am:** (fast and loud / dry / calm / funny / deadpan)
-- **Words I actually use:**
-- **Words I would never say out loud:**
-- **Do I swear:** (yes / mild / no)
-- **Emoji in captions:** (never / one, rarely / freely)
-- **Face on camera:** (always / sometimes / faceless)
-- **Voiceover or to-camera:**
-- **Pace:** (words per minute, if you have timed yourself reading a script.
-  `beats.py --wpm` uses this. Most people are between 150 and 200.)
+- **Three of my own reels or captions that sound most like me:** (not added
+  yet)
+- **On camera I am:** it depends on the video. Funny and relatable for the
+  gym-humour posts, more straightforward when I'm explaining fitness info.
+- **Words I actually use:** nothing specific. Write casually, the way a uni
+  student talks to a mate at the gym.
+- **Words I would never say out loud:** nothing specific yet. Avoid anything
+  that sounds like a corporate fitness brand or a textbook.
+- **Do I swear:** no. Never on camera.
+- **Emoji in captions:** freely.
+- **Face on camera:** always.
+- **Voiceover or to-camera:** both.
+- **Pace:** (not timed yet; use the 165 wpm default)
 
 ## My positions
 
 Three to five things I believe that some of my audience does not. These are
 where the good reels come from.
 
-1.
+1. (not decided yet)
 2.
 3.
 
 ## Off limits
 
-- **Topics I do not post about:**
-- **Clients, numbers or names I cannot say publicly:**
-- **Claims I am not allowed to make:** (regulated industry, employer policy, NDA)
+- **Topics I do not post about:** none yet.
+- **Clients, numbers or names I cannot say publicly:** none yet.
+- **Claims I am not allowed to make:** none yet. (Not a certified coach yet,
+  so don't present anything as medical or professional advice.)
 
 ## Proof I can use
 
@@ -55,12 +61,12 @@ Real numbers, outcomes and stories I am happy to put my name on. The skills will
 never invent one, so if this section is empty, every draft comes back with
 `{{your number}}` in it.
 
--
--
--
+- (none yet)
 
 ## The ask
 
-- **My keyword CTA, if I use one:** (one word, sayable, no spaces)
-- **What the keyword sends them:**
-- **Where my link goes:**
+- **My keyword CTA, if I use one:** none yet.
+- **What the keyword sends them:** n/a
+- **Where my link goes:** n/a
+- **Default ask until coaching launches:** follow, save, or send it to a gym
+  mate. One per post.
