@@ -63,7 +63,9 @@ never invent one, so if this section is empty, every draft comes back with
 
 - Lifting for 4 years, on and off. (The "on and off" is part of the story,
   relatable for uni students who keep falling off and restarting.)
-- Bench press: 125 {{kg or lb?}}
+- Bench press: 125 kg
+- Deadlift: 180 kg
+- Weighted dips: +50 kg
 
 ## The ask
 
